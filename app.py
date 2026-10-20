@@ -40,13 +40,13 @@ PAGES = {
 }
 
 ROLE_PAGES = {
-    "Health Worker": ("Register a Case", "Overview", "Outbreak Monitor", "Trends"),
+    "Health Worker": ("Overview", "Register a Case", "Outbreak Monitor", "Trends"),
     "Supervisor": tuple(PAGES),
 }
 
 LANDING_PAGE = {
-    "Health Worker": "Register a Case",
-    "Supervisor": "System Brain",
+    "Health Worker": "Overview",
+    "Supervisor": "Overview",
 }
 
 DISEASES = (
@@ -106,103 +106,133 @@ def add_styles():
         """
         <style>
         :root {
-            --ink: #18332c;
-            --muted: #53675f;
-            --green: #24745e;
-            --green-dark: #195c4a;
-            --mint: #e8f2ec;
-            --line: #dce7e1;
-            --paper: #ffffff;
-            --canvas: #f4f7f5;
+            --ink: #edf4f0;
+            --muted: #b1c1b9;
+            --accent: #67d5ad;
+            --accent-strong: #208b69;
+            --line: #34473f;
+            --surface: #19241f;
+            --surface-raised: #202d27;
+            --canvas: #0e1512;
         }
-        [data-testid="stAppViewContainer"] { background: var(--canvas); }
-        [data-testid="stHeader"] { background: var(--canvas); }
-        [data-testid="stHeader"] button,
-        [data-testid="stSidebarCollapsedControl"] button,
-        [data-testid="stSidebarCollapseButton"] button {
+        html, body, [data-testid="stApp"],
+        [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+            color: var(--ink) !important;
+            background: var(--canvas) !important;
+        }
+        [data-testid="stHeader"] {
+            background: rgba(14, 21, 18, 0.96) !important;
+        }
+        [data-testid="stHeader"] button {
             color: var(--ink) !important;
             opacity: 1 !important;
         }
-        [data-testid="stHeader"] button:hover,
-        [data-testid="stSidebarCollapsedControl"] button:hover,
-        [data-testid="stSidebarCollapseButton"] button:hover {
-            background: #e3ece6 !important;
+        [data-testid="stHeader"] button:hover {
+            background: var(--surface-raised) !important;
         }
-        [data-testid="stHeader"] svg,
-        [data-testid="stSidebarCollapsedControl"] svg,
-        [data-testid="stSidebarCollapseButton"] svg {
+        [data-testid="stHeader"] svg {
             color: var(--ink) !important;
             fill: var(--ink) !important;
         }
         [data-testid="stSidebar"] {
-            background: var(--mint);
+            background: var(--surface) !important;
             border-right: 1px solid var(--line);
         }
+        h1, h2, h3, h4, h5, h6, p, label, li, summary,
+        [data-testid="stMarkdownContainer"], [data-testid="stCaptionContainer"],
+        [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] p,
+        [data-testid="stWidgetLabel"] label,
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-            color: var(--ink);
+            color: var(--ink) !important;
         }
-        h1, h2, h3 { color: var(--ink); }
+        [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p,
+        small { color: var(--muted) !important; }
         h1 { font-size: 2rem; font-weight: 680; }
         h2, h3 { font-weight: 630; }
-        p, label, [data-testid="stCaptionContainer"] {
-            color: var(--muted);
-        }
         [data-testid="stWidgetLabel"] p,
         [data-testid="stWidgetLabel"] label,
-        [data-testid="stMarkdownContainer"] strong {
+        [data-testid="stMarkdownContainer"] strong,
+        [data-testid="stMarkdownContainer"] b {
             color: var(--ink) !important;
         }
-        input, textarea,
-        [data-baseweb="select"] > div,
-        [data-baseweb="input"] > div {
+        input, textarea, [data-baseweb="input"] > div,
+        [data-baseweb="select"] > div, [data-baseweb="textarea"] > div {
             color: var(--ink) !important;
-            background-color: var(--paper) !important;
-            border-color: #bdcec4 !important;
+            background-color: var(--surface-raised) !important;
+            border-color: var(--line) !important;
         }
-        input::placeholder, textarea::placeholder { color: #687c73 !important; }
-        [data-testid="stAlert"] p,
-        [data-testid="stAlert"] li {
+        input::placeholder, textarea::placeholder { color: var(--muted) !important; }
+        [data-baseweb="select"] *, [data-baseweb="input"] *,
+        [data-baseweb="textarea"] *, [role="listbox"] *, [role="option"] {
             color: var(--ink) !important;
         }
-        [data-testid="stMetricLabel"], [data-testid="stMetricValue"],
-        [data-testid="stMetricDelta"] { color: var(--ink) !important; }
-        [data-testid="stRadio"] label {
-            padding: 0.34rem 0.45rem;
-            border-radius: 6px;
+        [role="listbox"], [role="option"],
+        [data-baseweb="popover"] > div {
+            background-color: var(--surface-raised) !important;
         }
-        [data-testid="stRadio"] label:hover { background: #dbeae1; }
+        [data-testid="stForm"], [data-testid="stExpander"],
+        [data-testid="stDataFrame"], [data-testid="stTable"],
+        [data-testid="stMetric"] {
+            background-color: var(--surface) !important;
+            border-color: var(--line) !important;
+        }
         [data-testid="stForm"] {
             border: 1px solid var(--line);
             border-radius: 8px;
             padding: 1.25rem;
-            background: var(--paper);
         }
+        [data-testid="stDataFrame"] *, [data-testid="stTable"] * {
+            color: var(--ink) !important;
+        }
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"],
+        [data-testid="stMetricDelta"] { color: var(--ink) !important; }
+        [data-testid="stAlert"] p,
+        [data-testid="stAlert"] li {
+            color: var(--ink) !important;
+        }
+        [data-testid="stRadio"] label {
+            padding: 0.34rem 0.45rem;
+            border-radius: 6px;
+        }
+        [data-testid="stRadio"] label:hover { background: var(--surface-raised); }
         [data-testid="stFormSubmitButton"] button,
         [data-testid="stFormSubmitButton"] button[kind="primary"],
-        .stButton > button[kind="primary"] {
-            background: var(--green-dark) !important;
-            border: 1px solid var(--green-dark) !important;
+        .stButton > button[kind="primary"],
+        [data-testid="stBaseButton-primary"] {
+            background: var(--accent-strong) !important;
+            border: 1px solid var(--accent-strong) !important;
             color: #ffffff !important;
             font-weight: 650;
             min-height: 2.75rem;
             transition: background-color 120ms ease, border-color 120ms ease;
         }
         [data-testid="stFormSubmitButton"] button:hover,
-        .stButton > button[kind="primary"]:hover {
-            background: #124b3d !important;
-            border-color: #124b3d !important;
+        .stButton > button[kind="primary"]:hover,
+        [data-testid="stBaseButton-primary"]:hover {
+            background: #176e53 !important;
+            border-color: #176e53 !important;
             color: #ffffff !important;
         }
         [data-testid="stFormSubmitButton"] button p,
-        .stButton > button[kind="primary"] p {
+        .stButton > button[kind="primary"] p,
+        [data-testid="stBaseButton-primary"] p {
             color: #ffffff !important;
         }
         .stButton > button[kind="secondary"] {
             color: var(--ink) !important;
-            background: #ffffff !important;
-            border-color: #bdcec4 !important;
+            background: var(--surface-raised) !important;
+            border-color: var(--line) !important;
         }
-        [data-testid="stAlert"] { border-radius: 6px; }
+        [data-testid="stBaseButton-secondary"] {
+            color: var(--ink) !important;
+            background: var(--surface-raised) !important;
+            border-color: var(--line) !important;
+        }
+        [data-testid="stBaseButton-secondary"] p { color: var(--ink) !important; }
+        [data-testid="stAlert"] {
+            border-radius: 6px;
+            background-color: var(--surface-raised);
+        }
         .brand-lockup {
             display: flex;
             align-items: center;
@@ -215,15 +245,15 @@ def add_styles():
             width: 2.25rem;
             height: 2.25rem;
             border-radius: 7px;
-            background: var(--green);
+            background: var(--accent-strong);
             color: white;
             font-size: 1.3rem;
             font-weight: 700;
         }
-        .brand-name { color: var(--ink); font-size: 1.05rem; font-weight: 700; }
-        .brand-subtitle { color: var(--muted); font-size: 0.76rem; }
+        .brand-name { color: var(--ink) !important; font-size: 1.05rem; font-weight: 700; }
+        .brand-subtitle { color: var(--muted) !important; font-size: 0.76rem; }
         .eyebrow {
-            color: var(--green);
+            color: var(--accent);
             font-size: 0.76rem;
             font-weight: 700;
             margin-bottom: 0.3rem;
@@ -231,10 +261,10 @@ def add_styles():
         .role-chip {
             display: inline-block;
             padding: 0.2rem 0.55rem;
-            border: 1px solid #c6ddd1;
+            border: 1px solid var(--line);
             border-radius: 999px;
-            color: var(--green-dark);
-            background: #f4faf6;
+            color: var(--accent) !important;
+            background: var(--surface-raised);
             font-size: 0.76rem;
             font-weight: 650;
         }
@@ -247,34 +277,111 @@ def add_styles():
             border-radius: 6px;
             border: 1px solid transparent;
             background: transparent;
-            color: var(--ink);
+            color: var(--ink) !important;
             font-weight: 600;
             text-align: left;
             margin: 0.08rem 0;
         }
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: rgba(255,255,255,0.45);
+            background: var(--surface-raised) !important;
             border-color: transparent;
         }
         [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-            background: rgba(255,255,255,0.65);
+            background: var(--surface-raised) !important;
             border-color: transparent;
-            color: var(--green-dark);
-            box-shadow: inset 3px 0 0 var(--green);
+            color: var(--accent) !important;
+            box-shadow: inset 3px 0 0 var(--accent);
         }
         .empty-state {
             margin-top: 1.35rem;
             padding: 1.1rem 1.2rem;
             border: 1px solid var(--line);
-            border-left: 4px solid var(--green);
+            border-left: 4px solid var(--accent);
             border-radius: 6px;
-            background: var(--paper);
-            color: var(--muted);
+            background: var(--surface);
+            color: var(--muted) !important;
         }
         .empty-state strong { color: var(--ink); }
+        .st-key-mobile_navigation_bar,
+        .st-key-mobile_drawer { display: none; }
         @media (max-width: 640px) {
             [data-testid="stAppViewContainer"] .block-container {
                 padding: 3.5rem 1rem 2rem;
+            }
+            [data-testid="stSidebar"] { display: none !important; }
+            [data-testid="stExpandSidebarButton"],
+            [data-testid="stSidebarCollapseButton"] { display: none !important; }
+            .st-key-mobile_navigation_bar {
+                display: block;
+                margin: 0 0 0.8rem;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stHorizontalBlock"] {
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+                gap: 0.75rem !important;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stColumn"]:first-child {
+                flex: 0 0 48px !important;
+                width: 48px !important;
+                min-width: 48px !important;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stColumn"]:last-child {
+                flex: 1 1 auto !important;
+                width: auto !important;
+                min-width: 0 !important;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stBaseButton-secondary"] {
+                display: grid !important;
+                place-items: center !important;
+                width: 48px !important;
+                height: 48px !important;
+                border: 1px solid var(--line) !important;
+                border-radius: 8px !important;
+                background: var(--surface-raised) !important;
+                color: var(--accent) !important;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stBaseButton-secondary"] p {
+                margin: 0 !important;
+                color: var(--accent) !important;
+                font-size: 1.2rem;
+            }
+            .st-key-mobile_navigation_bar [data-testid="stCaptionContainer"] {
+                padding: 0 !important;
+                color: var(--muted) !important;
+            }
+            .st-key-mobile_drawer {
+                display: block !important;
+                position: fixed !important;
+                inset: 0 auto 0 0 !important;
+                width: min(84vw, 20rem) !important;
+                height: 100dvh !important;
+                overflow-y: auto !important;
+                box-sizing: border-box !important;
+                padding: 1rem !important;
+                background: var(--surface) !important;
+                border-right: 1px solid var(--line);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.42), 100vw 0 0 100vw rgba(0, 0, 0, 0.46);
+                z-index: 1000000 !important;
+                animation: drawer-enter 160ms ease-out both;
+            }
+            @keyframes drawer-enter {
+                from { transform: translateX(-100%); }
+                to { transform: translateX(0); }
+            }
+            .st-key-mobile_drawer .stButton [data-testid^="stBaseButton-"] {
+                width: 100% !important;
+                min-height: 44px !important;
+                justify-content: flex-start !important;
+                padding: 0.65rem 0.8rem !important;
+            }
+            .st-key-mobile_drawer .stButton [data-testid^="stBaseButton-"] p {
+                margin: 0 !important;
+                color: var(--ink) !important;
+                text-align: left;
+            }
+            .st-key-mobile_drawer .stButton [data-testid="stBaseButton-primary"] {
+                background: var(--surface-raised) !important;
+                box-shadow: inset 3px 0 0 var(--accent);
             }
             h1 { font-size: 1.65rem; }
             [data-testid="stForm"] {
@@ -288,32 +395,6 @@ def add_styles():
                 flex: 1 1 100% !important;
                 width: 100% !important;
                 min-width: 100% !important;
-            }
-            [data-testid="stSidebar"] {
-                min-width: min(84vw, 20rem);
-            }
-            [data-testid="stExpandSidebarButton"] {
-                display: grid !important;
-                place-items: center !important;
-                width: 2.75rem !important;
-                height: 2.75rem !important;
-                border: 1px solid var(--line) !important;
-                border-radius: 7px !important;
-                background: #ffffff !important;
-                color: var(--ink) !important;
-                box-shadow: 0 1px 3px rgba(24, 51, 44, 0.12);
-            }
-            [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
-                font-size: 0 !important;
-            }
-            [data-testid="stExpandSidebarButton"]::after {
-                content: "☰";
-                color: var(--ink);
-                font-size: 1.4rem;
-                line-height: 1;
-            }
-            [data-testid="stHeader"] {
-                background: rgba(244, 247, 245, 0.98);
             }
         }
         </style>
@@ -594,23 +675,28 @@ def render_case_registration():
 
 
 def render_overview_page():
+    st.markdown('<div class="eyebrow">DEMONSTRATION DATA</div>', unsafe_allow_html=True)
+    st.title("Overview")
+    st.caption("Dataset summary from the Lassa fever surveillance tables.")
+
     connection_string = get_database_connection_string()
     if not connection_string:
-        st.warning("No database connection is configured for the synthetic surveillance data.")
+        st.warning("Overview data is unavailable because no database connection is configured.")
+        st.info("For a hosted app, add the Neon connection string under [postgres] in the app's Secrets settings.")
         return
 
     try:
         overview, top_states = cached_overview_data(connection_string)
     except Exception:
-        st.error("The synthetic surveillance dataset is unavailable from the database right now.")
+        st.warning("Overview data could not be loaded from the configured database.")
+        st.info(
+            "Check that the hosted app's Neon connection points to the database containing "
+            "the required surveillance tables."
+        )
         return
 
-    st.markdown('<div class="eyebrow">SYNTHETIC DEMONSTRATION DATA</div>', unsafe_allow_html=True)
-    st.title("Overview")
-    st.caption("Dataset summary from the synthetic Lassa fever surveillance tables.")
-
     if not overview:
-        st.info("No synthetic surveillance data has been loaded yet.")
+        st.info("No surveillance data has been loaded yet.")
         return
 
     cards = st.columns(4)
@@ -638,29 +724,29 @@ def render_overview_page():
             hide_index=True,
         )
     else:
-        st.caption("No synthetic state-month data is currently available.")
+        st.caption("No state-month data is currently available.")
 
-    st.caption("This page uses synthetic data for demonstration and must not be described as real SORMAS or NCDC observations.")
+    st.caption("Demonstration data only. These records are not real SORMAS or NCDC observations.")
 
 
 def render_trends_page():
     connection_string = get_database_connection_string()
     if not connection_string:
-        st.warning("No database connection is configured for the synthetic trend analysis.")
+        st.warning("No database connection is configured for trend analysis.")
         return
 
     try:
         summary, states = cached_trends_data(connection_string)
     except Exception:
-        st.error("The synthetic trend data could not be loaded from Neon.")
+        st.error("Trend data could not be loaded from Neon.")
         return
 
-    st.markdown('<div class="eyebrow">SYNTHETIC DATA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="eyebrow">SURVEILLANCE DATA</div>', unsafe_allow_html=True)
     st.title("Trends")
-    st.caption("Monthly view of confirmed Lassa fever cases and outbreak activity derived from the synthetic dataset.")
+    st.caption("Monthly view of confirmed Lassa fever cases and outbreak activity.")
 
     if not summary:
-        st.info("No synthetic trend data is available yet.")
+        st.info("No trend data is available yet.")
         return
 
     state_filter = st.selectbox("Filter by state", ["All states"] + states)
@@ -681,7 +767,7 @@ def render_trends_page():
 
     st.subheader("Monthly summary")
     st.dataframe(chart_data, use_container_width=True, hide_index=True)
-    st.caption("This chart reflects synthetic demonstration data only and should not be described as real epidemiological reporting.")
+    st.caption("Demonstration data only; this chart is not real epidemiological reporting.")
 
 
 def render_outbreak_monitor_page():
@@ -693,12 +779,12 @@ def render_outbreak_monitor_page():
     try:
         monitor_rows = cached_monitor_rows(connection_string)
     except Exception:
-        st.error("The synthetic outbreak monitor data could not be loaded.")
+        st.error("Outbreak monitor data could not be loaded.")
         return
 
-    st.markdown('<div class="eyebrow">SYNTHETIC DATA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="eyebrow">SURVEILLANCE DATA</div>', unsafe_allow_html=True)
     st.title("Outbreak Monitor")
-    st.caption("Latest state-level synthetic outbreak risk snapshot, ordered by recent outbreak pressure.")
+    st.caption("Latest state-level outbreak risk snapshot, ordered by recent outbreak pressure.")
 
     if not monitor_rows:
         st.info("No outbreak-monitor data is available.")
@@ -732,15 +818,15 @@ def render_alerts_page():
     try:
         alerts = cached_alerts(connection_string, 10)
     except Exception:
-        st.error("The synthetic alert feed could not be loaded.")
+        st.error("The alert feed could not be loaded.")
         return
 
-    st.markdown('<div class="eyebrow">SYNTHETIC DATA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="eyebrow">SURVEILLANCE DATA</div>', unsafe_allow_html=True)
     st.title("Alerts")
-    st.caption("High- and medium-priority synthetic surveillance alerts derived from outbreak-state summaries.")
+    st.caption("High- and medium-priority surveillance alerts derived from outbreak-state summaries.")
 
     if not alerts:
-        st.info("No synthetic alerts are currently active.")
+        st.info("No alerts are currently active.")
         return
 
     alert_rows = []
@@ -752,7 +838,7 @@ def render_alerts_page():
             "Severity": row["risk_label"],
             "Confirmed cases": int(row["confirmed"]),
             "Q70 threshold": round(float(row["q70"]), 2),
-            "Message": f"Synthetic alert for {row['state']}: recent confirmed cases suggest elevated outbreak risk; review and verify before dispatch.",
+            "Message": f"Alert for {row['state']}: recent confirmed cases suggest elevated outbreak risk; review and verify before dispatch.",
             "Status": "Open",
         })
 
@@ -770,7 +856,7 @@ def render_system_brain_page():
         st.error("Supervisor access is required to run the surveillance cycle.")
         return
 
-    st.markdown('<div class="eyebrow">SYNTHETIC DATA · MAPE-K CYCLE</div>', unsafe_allow_html=True)
+    st.markdown('<div class="eyebrow">SURVEILLANCE DATA · MAPE-K CYCLE</div>', unsafe_allow_html=True)
     st.title("System Brain")
     st.caption("Adaptive surveillance decision support. High-risk signals require human epidemiological review.")
 
@@ -779,8 +865,8 @@ def render_system_brain_page():
             run_cycle(connection_string)
             st.cache_data.clear()
             st.success("Surveillance cycle completed.")
-        except Exception as error:
-            st.error(f"The surveillance cycle failed: {error}")
+        except Exception:
+            st.error("The cycle could not reach Neon. Check the database connection and this machine's network access, then try again.")
 
     try:
         status = cached_brain_status(connection_string)
@@ -795,8 +881,10 @@ def render_system_brain_page():
     run_metrics[2].metric("Records processed", f"{last_run['records_processed']:,}" if last_run else "0")
     run_metrics[3].metric("Alerts generated", f"{last_run['alerts_generated']:,}" if last_run else "0")
 
-    if last_run and last_run.get("message"):
+    if last_run and last_run.get("message") and last_run.get("status") != "FAILED":
         st.caption(last_run["message"])
+    elif last_run and last_run.get("status") == "FAILED":
+        st.caption("The previous cycle failed. Check the database connection and try again.")
 
     st.subheader("Latest ASVM classifications and risk levels")
     predictions = status["predictions"]
@@ -811,7 +899,7 @@ def render_system_brain_page():
             "Observed target": int(row["actual_outbreak"]),
         } for row in predictions], use_container_width=True, hide_index=True)
     else:
-        st.info("No ASVM classifications yet. Run the cycle to initialize and process the synthetic data.")
+        st.info("No ASVM classifications yet. Run the cycle to initialize and process the data.")
 
     st.subheader("Generated alerts")
     alerts = status["alerts"]
@@ -838,7 +926,7 @@ def render_system_brain_page():
             "Classifications": int(row["predictions_made"]),
             "Alerts": int(row["alerts_generated"]),
         } for row in status["runs"]], use_container_width=True, hide_index=True)
-    st.caption("Synthetic demonstration data only. Alerts are investigation signals, not outbreak confirmation or automatic dispatch.")
+    st.caption("Demonstration data only. Alerts are investigation signals, not outbreak confirmation or automatic dispatch.")
 
 
 def render_model_page():
@@ -851,12 +939,12 @@ def render_model_page():
         overview, _ = cached_overview_data(connection_string)
         status = cached_brain_status(connection_string)
     except Exception:
-        st.error("Model inputs could not be read from the synthetic dataset.")
+        st.error("Model inputs could not be read from the dataset.")
         return
 
     st.markdown('<div class="eyebrow">ASVM MODEL WORKSPACE</div>', unsafe_allow_html=True)
     st.title("Model")
-    st.caption("Adaptive linear SVM configuration and prequential evaluation on synthetic data.")
+    st.caption("Adaptive linear SVM configuration and prequential evaluation on demonstration data.")
 
     model_ready = status.get(
         "model_ready",
@@ -865,7 +953,7 @@ def render_model_page():
     model_status = "TRAINED" if model_ready else "NOT FITTED"
     status_col, records_col, states_col, scored_col = st.columns(4)
     status_col.metric("Training status", model_status)
-    records_col.metric("Synthetic records", f"{overview.get('total_case_records', 0):,}")
+    records_col.metric("Records", f"{overview.get('total_case_records', 0):,}")
     states_col.metric("State-month samples", f"{overview.get('state_month_rows', 0):,}")
     scored_col.metric("Evaluated classifications", f"{status['evaluation']['evaluated']:,}")
 
@@ -905,9 +993,9 @@ def render_model_page():
         st.subheader("Prequential classification evaluation")
         st.caption(f"Observed metrics from {evaluated:,} pre-update SVM classifications; outbreak class is assigned when decision score > 0. Probability thresholds are used only for risk levels.")
         metric_cols = st.columns(3)
-        metric_cols[0].metric("Precision", f"{precision:.3f}")
-        metric_cols[1].metric("Outbreak recall", f"{recall:.3f}")
-        metric_cols[2].metric("F1 score", f"{f1:.3f}")
+        metric_cols[0].metric("Precision", f"{precision:.1%} ({precision:.3f})")
+        metric_cols[1].metric("Outbreak recall", f"{recall:.1%} ({recall:.3f})")
+        metric_cols[2].metric("F1 score", f"{f1:.1%} ({f1:.3f})")
         st.dataframe([
             {"Actual / classification": "Outbreak", "Classified outbreak": true_positive, "Classified non-outbreak": false_negative},
             {"Actual / classification": "Non-outbreak", "Classified outbreak": false_positive, "Classified non-outbreak": int(evaluation["true_negative"] or 0)},
@@ -920,18 +1008,21 @@ def render_model_page():
     if baseline:
         st.caption(f"Fit once on the first {baseline['train_rows']:,} observations; evaluated on {baseline['test_rows']:,} later observations beginning {baseline['test_start']}. Classification uses decision score > 0.")
         baseline_metrics = st.columns(3)
-        baseline_metrics[0].metric("Precision", f"{float(baseline['precision']):.3f}")
-        baseline_metrics[1].metric("Outbreak recall", f"{float(baseline['recall']):.3f}")
-        baseline_metrics[2].metric("F1 score", f"{float(baseline['f1']):.3f}")
+        baseline_precision = float(baseline["precision"])
+        baseline_recall = float(baseline["recall"])
+        baseline_f1 = float(baseline["f1"])
+        baseline_metrics[0].metric("Precision", f"{baseline_precision:.1%} ({baseline_precision:.3f})")
+        baseline_metrics[1].metric("Outbreak recall", f"{baseline_recall:.1%} ({baseline_recall:.3f})")
+        baseline_metrics[2].metric("F1 score", f"{baseline_f1:.1%} ({baseline_f1:.3f})")
         comparison = []
         if evaluated:
-            comparison.append({"Model": "Adaptive SVM (prequential)", "Test classifications": evaluated, "Precision": f"{precision:.3f}", "Recall": f"{recall:.3f}", "F1": f"{f1:.3f}"})
-        comparison.append({"Model": "LinearSVC (70/30 temporal)", "Test classifications": int(baseline["test_rows"]), "Precision": f"{float(baseline['precision']):.3f}", "Recall": f"{float(baseline['recall']):.3f}", "F1": f"{float(baseline['f1']):.3f}"})
+            comparison.append({"Model": "Adaptive SVM (prequential)", "Test classifications": evaluated, "Precision": f"{precision:.1%} ({precision:.3f})", "Recall": f"{recall:.1%} ({recall:.3f})", "F1": f"{f1:.1%} ({f1:.3f})"})
+        comparison.append({"Model": "LinearSVC (70/30 temporal)", "Test classifications": int(baseline["test_rows"]), "Precision": f"{baseline_precision:.1%} ({baseline_precision:.3f})", "Recall": f"{baseline_recall:.1%} ({baseline_recall:.3f})", "F1": f"{baseline_f1:.1%} ({baseline_f1:.3f})"})
         st.dataframe(comparison, use_container_width=True, hide_index=True)
     else:
         st.info("The LinearSVC baseline will be created with the next System Brain cycle.")
 
-    st.caption("All records shown here are synthetic demonstration data. Classification metrics do not establish real-world clinical performance.")
+    st.caption("Demonstration data only. Classification metrics do not establish real-world clinical performance.")
 
 
 def render_page(page):
@@ -988,7 +1079,7 @@ if not allowed_pages:
 active_page = st.session_state.get("active_page", LANDING_PAGE[role])
 if active_page not in allowed_pages:
     active_page = LANDING_PAGE[role]
-    st.session_state["active_page"] = active_page
+st.session_state["active_page"] = active_page
 
 with st.sidebar:
     st.markdown(
@@ -1017,6 +1108,35 @@ with st.sidebar:
         st.session_state.pop("active_page", None)
         st.session_state.pop("sidebar_page", None)
         st.rerun()
+
+with st.container(key="mobile_navigation_bar"):
+    menu_col, page_col = st.columns([1, 4])
+    if menu_col.button("☰", key="mobile_menu_toggle", help="Open section menu", use_container_width=True):
+        st.session_state["mobile_drawer_open"] = True
+        st.rerun()
+    page_col.caption(active_page)
+
+if st.session_state.get("mobile_drawer_open", False):
+    with st.container(key="mobile_drawer"):
+        close_col, role_col = st.columns([1, 4])
+        if close_col.button("×", key="mobile_menu_close", help="Close section menu", use_container_width=True):
+            st.session_state["mobile_drawer_open"] = False
+            st.rerun()
+        role_col.markdown(f'<span class="role-chip">{role}</span>', unsafe_allow_html=True)
+        st.divider()
+        for page in allowed_pages:
+            button_type = "primary" if page == active_page else "secondary"
+            if st.button(page, key=f"mobile_nav_{page}", use_container_width=True, type=button_type):
+                st.session_state["active_page"] = page
+                st.session_state["mobile_drawer_open"] = False
+                st.rerun()
+        st.divider()
+        st.caption(f"Signed in as {user['username']}")
+        if st.button("Sign out", key="mobile_sign_out", use_container_width=True):
+            st.session_state.pop("auth_user", None)
+            st.session_state.pop("active_page", None)
+            st.session_state["mobile_drawer_open"] = False
+            st.rerun()
 
 if st.session_state.get("active_page") not in ROLE_PAGES.get(user.get("role"), ()):
     st.error("You do not have permission to view this page.")

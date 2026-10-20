@@ -376,7 +376,7 @@ def run_cycle(connection_string):
                         """UPDATE surveillance_brain_runs
                            SET finished_at = CURRENT_TIMESTAMP, status = 'FAILED', message = %s
                            WHERE id = %s""",
-                        (str(error)[:1000], run_id),
+                        ("Cycle failed; check database connectivity and application logs.", run_id),
                     )
             raise
 
