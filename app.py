@@ -25,7 +25,7 @@ st.set_page_config(
     page_title="Disease Surveillance",
     page_icon="🩺",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 PAGES = {
@@ -107,22 +107,39 @@ def add_styles():
         <style>
         :root {
             --ink: #18332c;
-            --muted: #62766f;
+            --muted: #53675f;
             --green: #24745e;
             --green-dark: #195c4a;
             --mint: #e8f2ec;
             --line: #dce7e1;
             --paper: #ffffff;
-            --canvas: #f6f8f6;
+            --canvas: #f4f7f5;
         }
         [data-testid="stAppViewContainer"] { background: var(--canvas); }
-        [data-testid="stHeader"] { background: transparent; }
+        [data-testid="stHeader"] { background: var(--canvas); }
+        [data-testid="stHeader"] button,
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="stSidebarCollapseButton"] button {
+            color: var(--ink) !important;
+            opacity: 1 !important;
+        }
+        [data-testid="stHeader"] button:hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover,
+        [data-testid="stSidebarCollapseButton"] button:hover {
+            background: #e3ece6 !important;
+        }
+        [data-testid="stHeader"] svg,
+        [data-testid="stSidebarCollapsedControl"] svg,
+        [data-testid="stSidebarCollapseButton"] svg {
+            color: var(--ink) !important;
+            fill: var(--ink) !important;
+        }
         [data-testid="stSidebar"] {
             background: var(--mint);
             border-right: 1px solid var(--line);
         }
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-            color: var(--muted);
+            color: var(--ink);
         }
         h1, h2, h3 { color: var(--ink); }
         h1 { font-size: 2rem; font-weight: 680; }
@@ -130,6 +147,25 @@ def add_styles():
         p, label, [data-testid="stCaptionContainer"] {
             color: var(--muted);
         }
+        [data-testid="stWidgetLabel"] p,
+        [data-testid="stWidgetLabel"] label,
+        [data-testid="stMarkdownContainer"] strong {
+            color: var(--ink) !important;
+        }
+        input, textarea,
+        [data-baseweb="select"] > div,
+        [data-baseweb="input"] > div {
+            color: var(--ink) !important;
+            background-color: var(--paper) !important;
+            border-color: #bdcec4 !important;
+        }
+        input::placeholder, textarea::placeholder { color: #687c73 !important; }
+        [data-testid="stAlert"] p,
+        [data-testid="stAlert"] li {
+            color: var(--ink) !important;
+        }
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"],
+        [data-testid="stMetricDelta"] { color: var(--ink) !important; }
         [data-testid="stRadio"] label {
             padding: 0.34rem 0.45rem;
             border-radius: 6px;
@@ -141,16 +177,30 @@ def add_styles():
             padding: 1.25rem;
             background: var(--paper);
         }
-        [data-testid="stFormSubmitButton"] button {
-            background: #b94d43;
-            border-color: #b94d43;
-            color: white;
+        [data-testid="stFormSubmitButton"] button,
+        [data-testid="stFormSubmitButton"] button[kind="primary"],
+        .stButton > button[kind="primary"] {
+            background: var(--green-dark) !important;
+            border: 1px solid var(--green-dark) !important;
+            color: #ffffff !important;
             font-weight: 650;
+            min-height: 2.75rem;
+            transition: background-color 120ms ease, border-color 120ms ease;
         }
-        [data-testid="stFormSubmitButton"] button:hover {
-            background: #a64038;
-            border-color: #a64038;
-            color: white;
+        [data-testid="stFormSubmitButton"] button:hover,
+        .stButton > button[kind="primary"]:hover {
+            background: #124b3d !important;
+            border-color: #124b3d !important;
+            color: #ffffff !important;
+        }
+        [data-testid="stFormSubmitButton"] button p,
+        .stButton > button[kind="primary"] p {
+            color: #ffffff !important;
+        }
+        .stButton > button[kind="secondary"] {
+            color: var(--ink) !important;
+            background: #ffffff !important;
+            border-color: #bdcec4 !important;
         }
         [data-testid="stAlert"] { border-radius: 6px; }
         .brand-lockup {
@@ -222,14 +272,49 @@ def add_styles():
             color: var(--muted);
         }
         .empty-state strong { color: var(--ink); }
-        .login-note {
-            margin-top: 0.8rem;
-            font-size: 0.84rem;
-            color: var(--muted);
-        }
         @media (max-width: 640px) {
+            [data-testid="stAppViewContainer"] .block-container {
+                padding: 3.5rem 1rem 2rem;
+            }
             h1 { font-size: 1.65rem; }
-            [data-testid="stForm"] { padding: 0.9rem; }
+            [data-testid="stForm"] {
+                padding: 0.9rem;
+                border-radius: 7px;
+            }
+            [data-testid="stHorizontalBlock"]:has([data-testid="stForm"]) > [data-testid="column"]:not(:has([data-testid="stForm"])) {
+                display: none !important;
+            }
+            [data-testid="stHorizontalBlock"]:has([data-testid="stForm"]) > [data-testid="column"]:has([data-testid="stForm"]) {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+            [data-testid="stSidebar"] {
+                min-width: min(84vw, 20rem);
+            }
+            [data-testid="stExpandSidebarButton"] {
+                display: grid !important;
+                place-items: center !important;
+                width: 2.75rem !important;
+                height: 2.75rem !important;
+                border: 1px solid var(--line) !important;
+                border-radius: 7px !important;
+                background: #ffffff !important;
+                color: var(--ink) !important;
+                box-shadow: 0 1px 3px rgba(24, 51, 44, 0.12);
+            }
+            [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
+                font-size: 0 !important;
+            }
+            [data-testid="stExpandSidebarButton"]::after {
+                content: "☰";
+                color: var(--ink);
+                font-size: 1.4rem;
+                line-height: 1;
+            }
+            [data-testid="stHeader"] {
+                background: rgba(244, 247, 245, 0.98);
+            }
         }
         </style>
         """,
@@ -254,7 +339,6 @@ def render_login():
             unsafe_allow_html=True,
         )
         st.title("Sign in")
-        st.caption("Use your configured local demo account to continue.")
 
         with st.form("login_form"):
             username = st.text_input("Username", autocomplete="username")
@@ -273,19 +357,16 @@ def render_login():
             try:
                 user = authenticate(username, password)
             except Exception:
-                st.error("Could not verify the account with the configured database.")
+                st.error("Could not connect to the account database. Check the hosted app's Neon connection settings.")
                 return
             if user:
                 st.session_state["auth_user"] = user
                 st.session_state["active_page"] = LANDING_PAGE[user["role"]]
                 st.rerun()
-            st.error("Username or password is incorrect.")
-
-        st.markdown(
-            '<div class="login-note">Demo credentials are for local presentation only. '
-            'This login is not production-grade security.</div>',
-            unsafe_allow_html=True,
-        )
+            if not get_database_connection_string():
+                st.error("Login is not configured on this hosted app. Add the Neon connection string in the app's Secrets settings.")
+            else:
+                st.error("Username or password is incorrect.")
 
 
 def render_user_management_page():
