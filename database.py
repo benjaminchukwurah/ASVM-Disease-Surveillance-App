@@ -1,3 +1,7 @@
+import base64
+import hashlib
+import hmac
+import secrets
 from contextlib import contextmanager
 from contextlib import closing
 from functools import lru_cache
@@ -141,6 +145,95 @@ CREATE TABLE IF NOT EXISTS surveillance_cases (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 """
+
+CREATE_USERS_TABLE = """
+CREATE TABLE IF NOT EXISTS surveillance_users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(80) NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(40) NOT NULL CHECK (role IN ('Health Worker', 'Supervisor')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ix_surveillance_users_username
+    ON surveillance_users (LOWER(username));
+"""
+
+PASSWORD_HASH_ROUNDS = 310_000
+
+
+def hash_user_password(password):
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PASSWORD_HASH_ROUNDS)
+    return "$".join((
+        "pbkdf2_sha256",
+        str(PASSWORD_HASH_ROUNDS),
+        base64.urlsafe_b64encode(salt).decode("ascii"),
+        base64.urlsafe_b64encode(digest).decode("ascii"),
+    ))
+
+
+def verify_user_password(password, encoded_hash):
+    try:
+        algorithm, rounds, encoded_salt, encoded_digest = encoded_hash.split("$", 3)
+        if algorithm != "pbkdf2_sha256" or int(rounds) != PASSWORD_HASH_ROUNDS:
+            return False
+        salt = base64.urlsafe_b64decode(encoded_salt)
+        expected = base64.urlsafe_b64decode(encoded_digest)
+    except (AttributeError, ValueError):
+        return False
+    actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, PASSWORD_HASH_ROUNDS)
+    return hmac.compare_digest(actual, expected)
+
+
+def ensure_user_schema(connection_string):
+    with closing(psycopg2.connect(connection_string, connect_timeout=8)) as connection:
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(CREATE_USERS_TABLE)
+
+
+def authenticate_database_user(connection_string, username, password):
+    ensure_user_schema(connection_string)
+    with closing(psycopg2.connect(connection_string, connect_timeout=8)) as connection:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                "SELECT username, password_hash, role FROM surveillance_users WHERE LOWER(username) = LOWER(%s)",
+                (username.strip(),),
+            )
+            account = cursor.fetchone()
+    if account and verify_user_password(password, account["password_hash"]):
+        return {"username": account["username"], "role": account["role"]}
+    return None
+
+
+def create_user_account(connection_string, username, password, role):
+    username = username.strip()
+    if not 3 <= len(username) <= 80:
+        raise ValueError("Username must be between 3 and 80 characters.")
+    if len(password) < 12:
+        raise ValueError("Password must be at least 12 characters.")
+    if role not in ("Health Worker", "Supervisor"):
+        raise ValueError("Select a valid role.")
+
+    ensure_user_schema(connection_string)
+    try:
+        with closing(psycopg2.connect(connection_string, connect_timeout=8)) as connection:
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "INSERT INTO surveillance_users (username, password_hash, role) VALUES (%s, %s, %s)",
+                        (username, hash_user_password(password), role),
+                    )
+    except psycopg2.errors.UniqueViolation:
+        raise ValueError("That username is already in use.") from None
+
+
+def get_user_accounts(connection_string):
+    ensure_user_schema(connection_string)
+    with closing(psycopg2.connect(connection_string, connect_timeout=8)) as connection:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("SELECT username, role, created_at FROM surveillance_users ORDER BY username")
+            return [dict(row) for row in cursor.fetchall()]
 
 
 INSERT_CASE = """

@@ -14,6 +14,9 @@ from database import (
     get_trends_data,
     initialize_database,
     save_case,
+    authenticate_database_user,
+    create_user_account,
+    get_user_accounts,
 )
 from system_brain import get_brain_status, run_cycle
 
@@ -33,6 +36,7 @@ PAGES = {
     "Alerts": "Review and manage surveillance alerts.",
     "System Brain": "Inspect the surveillance engine and its activity.",
     "Model": "Review model approach, evaluation, and coverage.",
+    "User Management": "Create accounts and assign workspace roles.",
 }
 
 ROLE_PAGES = {
@@ -91,6 +95,9 @@ def authenticate(username, password):
             role = str(account.get("role", ""))
             if role in ROLE_PAGES:
                 return {"username": configured_username, "role": role}
+    connection_string = get_database_connection_string()
+    if connection_string:
+        return authenticate_database_user(connection_string, username, password)
     return None
 
 
@@ -263,7 +270,11 @@ def render_login():
             )
 
         if submitted:
-            user = authenticate(username, password)
+            try:
+                user = authenticate(username, password)
+            except Exception:
+                st.error("Could not verify the account with the configured database.")
+                return
             if user:
                 st.session_state["auth_user"] = user
                 st.session_state["active_page"] = LANDING_PAGE[user["role"]]
@@ -275,6 +286,49 @@ def render_login():
             'This login is not production-grade security.</div>',
             unsafe_allow_html=True,
         )
+
+
+def render_user_management_page():
+    if st.session_state["auth_user"].get("role") != "Supervisor":
+        st.error("Supervisor access is required to manage users.")
+        return
+
+    connection_string = get_database_connection_string()
+    st.markdown('<div class="eyebrow">ACCESS CONTROL</div>', unsafe_allow_html=True)
+    st.title("User Management")
+    if not connection_string:
+        st.error("Configure the PostgreSQL connection before creating user accounts.")
+        return
+
+    with st.form("create_user_form"):
+        username = st.text_input("Username", max_chars=80)
+        password = st.text_input("Temporary password", type="password")
+        role = st.selectbox("Role", ("Health Worker", "Supervisor"))
+        submitted = st.form_submit_button("Create user", type="primary")
+
+    if submitted:
+        try:
+            create_user_account(connection_string, username, password, role)
+            st.success(f"Created {role} account for {username.strip()}.")
+        except ValueError as error:
+            st.error(str(error))
+        except Exception:
+            st.error("The account could not be created. Check the database connection and try again.")
+
+    st.subheader("Accounts created here")
+    try:
+        accounts = get_user_accounts(connection_string)
+    except Exception:
+        st.error("User accounts could not be loaded from the database.")
+        return
+    if accounts:
+        st.dataframe(
+            [{"Username": account["username"], "Role": account["role"], "Created": account["created_at"]} for account in accounts],
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info("No accounts have been created here yet.")
 
 
 def get_database_connection_string():
@@ -800,6 +854,9 @@ def render_model_page():
 
 
 def render_page(page):
+    if page == "User Management":
+        render_user_management_page()
+        return
     if page == "Register a Case":
         render_case_registration()
         return
